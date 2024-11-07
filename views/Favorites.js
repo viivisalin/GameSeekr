@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Search() {
-    return (
-        <View style={styles.container}>
-          <Text style={styles.text}>Search for Games Here!</Text>
-        </View>
-      );
+export default function Favorites() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Your Favorite Games</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
