@@ -47,6 +47,11 @@ export default function App() {
             borderTopWidth: 0,
             paddingBottom: 5,
           },
+          tabBarLabelStyle: {
+            fontSize: 10,
+          },
+          tabBarActiveTintColor: '#7F7EFF',
+          tabBarInactiveTintColor: '#CBCBCD',
         })}
       >
         <Tab.Screen name="Home" component={Home} options={{ headerShown: false }}/>

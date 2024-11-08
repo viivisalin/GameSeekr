@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+import { RAWG_API_KEY } from '@env';
+
 export default function Profile() {
     return (
         <View style={styles.container}>
