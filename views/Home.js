@@ -70,9 +70,9 @@ export default function Home() {
                     {item.rating && (
                       <Text style={styles.gameDetail}>Rating: {item.rating}</Text>
                     )}
-                    {item.game_pk && item.game_pk.lenght > 0 ? (
+                    {item.stores && item.stores.lenght > 0 ? (
                       <Text style={styles.gameDetail}>
-                        Available on: {item.game_pk.map(store => store.store.name).join(", ")}</Text>
+                        Available on: {item.stores.map(store => store.store.name).join(", ")}</Text>
                     ) : (
                       <Text style={styles.gameDetail}>Available on: Multiple Platforms</Text>
                     )}
