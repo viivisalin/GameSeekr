@@ -70,11 +70,9 @@ export default function Home() {
                     {item.rating && (
                       <Text style={styles.gameDetail}>Rating: {item.rating}</Text>
                     )}
-                    {item.stores && item.stores.lenght > 0 ? (
-                      <Text style={styles.gameDetail}>
+                    {item.stores && (
+                      <Text style={styles.gameStores}>
                         Available on: {item.stores.map(store => store.store.name).join(", ")}</Text>
-                    ) : (
-                      <Text style={styles.gameDetail}>Available on: Multiple Platforms</Text>
                     )}
                   </View>
                 </View>
@@ -131,11 +129,18 @@ const styles = StyleSheet.create({
   },
   gameImage: {
     width: 80,
-    height: 80,
+    height: 100,
     borderRadius: 6,
     marginRight: 14,
   },
   gameDetail: {
+    fontFamily: 'Agdasima-Regular',
+    fontSize: 16,
+    color: '',
+    textAlign: 'left',
+    marginBottom: 3,
+  },
+  gameStores: {
     fontFamily: 'Agdasima-Regular',
     fontSize: 18,
     color: '',
