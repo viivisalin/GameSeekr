@@ -61,7 +61,7 @@ export default function Home() {
                   )}
                   <View style={styles.gameInfo}>
                     <Text style={styles.gameTitle}>{item.name}</Text>
-                    {item.developers && item.developers.lenght > 0 && (
+                    {item.developers && item.developers.length > 0 && (
                       <Text style={styles.gameDetail}>Developer: {item.developers[0].name}</Text>
                     )}
                     {item.released && (
