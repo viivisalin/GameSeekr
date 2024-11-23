@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Image } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { RAWG_API_KEY } from '@env';
 
@@ -26,9 +27,15 @@ export default function Search() {
     }
   };
 
-  useEffect(() => {
-    searchGames();
-  }, [gamename]);
+  const handleFavorite = (game) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.includes(game.id)) {
+        return prevFavorites.filter((id) => id !== game.id);
+      } else {
+        return [...prevFavorites, game.id];
+      }
+    });
+  };
 
   return (
     <View style={styles.outerContainer}>
@@ -48,36 +55,46 @@ export default function Search() {
             <Text style={styles.buttonText}>Search</Text>
           </TouchableOpacity>
         </View>
-        
+
         <FlatList
-          data={gamename}
+          data={repos || []}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.gameItem}>
-              {item.background_image && (
-                <Image
-                  source={{ uri: item.background_image }}
-                  style={styles.gameImage}
-                />
-              )}
-              <View style={styles.gameInfo}>
-                <Text style={styles.gameTitle}>{item.name}</Text>
-                {item.developers && item.developers.length > 0 && (
-                  <Text style={styles.gameDetail}>Developer: {item.developers[0].name}</Text>
+          renderItem={({ item }) => {
+            console.log(item);
+            return (
+              <View style={styles.gameItem}>
+                {item.background_image && (
+                  <Image
+                    source={{ uri: item.background_image }}
+                    style={styles.gameImage}
+                  />
                 )}
-                {item.released && (
-                  <Text style={styles.gameDetail}>Released: {new Date(item.released).getFullYear()}</Text>
-                )}
-                {item.rating && (
-                  <Text style={styles.gameDetail}>Rating: {item.rating}</Text>
-                )}
-                {item.stores && (
-                  <Text style={styles.gameStores}>
-                    Available on: {item.stores.map(store => store.store.name).join(", ")}</Text>
-                )}
+                <View style={styles.gameInfo}>
+                  <Text style={styles.gameTitle}>{item.name}</Text>
+                  {item.developers && item.developers.length > 0 && (
+                    <Text style={styles.gameDetail}>{`Developer: ${item.developers && item.developers[0]?.name ? item.developers[0]?.name : "Unknown"}`}</Text>
+                  )}
+                  {item.released && (
+                    <Text style={styles.gameDetail}>{`Released: ${item.released ? new Date(item.released).getFullYear() : "Unknown"}`}</Text>
+                  )}
+                  {item.rating && (
+                    <Text style={styles.gameDetail}>{`Rating: ${item.rating !== undefined ? item.rating : "N/A"}`}</Text>
+                  )}
+                  {item.stores && item.stores.length > 0 && (
+                    <Text style={styles.gameStores}>
+                      Available on: {item.stores.map(store => store?.store?.name || "Unknown").join(", ")}
+                    </Text>
+                  )}
+                </View>
+                <TouchableOpacity
+                  style={styles.favoriteButton}
+                  onPress={() => handleFavorite(item)}
+                >
+                  <Ionicons name="heart-outline" size={24} color="#F2F4FF" />
+                </TouchableOpacity>
               </View>
-            </View>
-          )}
+            )
+          }}
         />
       </View>
     </View>
@@ -135,9 +152,10 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
+    width: 350,
     borderWidth: 1,
     borderColor: '#37322F',
+    position: 'relative',
   },
   gameTitle: {
     fontFamily: 'Agdasima-Bold',
@@ -191,4 +209,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Agdasima-Bold',
   },
+  favoriteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+    zIndex: 10,
+  }
 });

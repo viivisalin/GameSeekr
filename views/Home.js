@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, Text, FlatList, ActivityIndicator, Image } from "react-native";
+import { StyleSheet, View, Text, FlatList, ActivityIndicator, Image, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { RAWG_API_KEY } from '@env';
 import { useEffect, useState } from "react";
@@ -10,6 +11,7 @@ export default function Home() {
 
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState([]);
 
   let [fontsLoaded] = useFonts({
     'Agdasima-Regular': require('../assets/fonts/Agdasima-Regular.ttf'),
@@ -36,6 +38,16 @@ export default function Home() {
 
     fetchHighlightGames();
   }, []);
+
+  const handleFavorite = (game) => {
+    setFavorites((prevFavorites) => {
+      if (prevFavorites.includes(game.id)) {
+        return prevFavorites.filter((id) => id !== game.id);
+      } else {
+        return [...prevFavorites, game.id];
+      }
+    });
+  };
 
   return (
     <View style={styles.outerContainer}>
@@ -75,6 +87,12 @@ export default function Home() {
                         Available on: {item.stores.map(store => store.store.name).join(", ")}</Text>
                     )}
                   </View>
+                  <TouchableOpacity
+                    style={styles.favoriteButton}
+                    onPress={() => handleFavorite(item)}
+                  >
+                    <Ionicons name="heart-outline" size={24} color="#F2F4FF" />
+                  </TouchableOpacity>
                 </View>
               )}
             />
@@ -121,6 +139,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 1,
     borderColor: '#37322F',
+    position: 'relative',
   },
   gameTitle: {
     fontFamily: 'Agdasima-Bold',
@@ -136,18 +155,25 @@ const styles = StyleSheet.create({
   gameDetail: {
     fontFamily: 'Agdasima-Regular',
     fontSize: 16,
-    color: '',
+    color: '#37322F',
     textAlign: 'left',
     marginBottom: 3,
   },
   gameStores: {
     fontFamily: 'Agdasima-Regular',
     fontSize: 18,
-    color: '',
+    color: '#37322F',
     textAlign: 'left',
     marginBottom: 3,
   },
   gameInfo: {
     flex: 1,
   },
+  favoriteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+    zIndex: 10,
+  }
 });
