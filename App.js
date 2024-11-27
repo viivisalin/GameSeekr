@@ -2,22 +2,43 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Home from './views/Home';
-import Login from './views/Login';
-import Search from './views/Search';
-import Favorites from './views/Favorites';
-import Profile from './views/Profile';
+import Home from './app/Home';
+import Login from './app/Login';
+import Search from './app/Search';
+import Favorites from './app/Favorites';
+import Profile from './app/Profile';
+
 
 export default function App() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const Tab = createBottomTabNavigator();
+  const Stack = createNativeStackNavigator();
 
-  return (
-    <NavigationContainer>
-      <Tab.Navigator
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  const StackNavigator = () => (
+    <Stack.Navigator>
+      <Stack.Screen 
+        name='Login'
+        component={Login}
+        options={{ headerShown: false }}
+        initialParams={{ onLogin: handleLogin }}
+      />
+    </Stack.Navigator>
+  );
+
+  const TabNavigator = () => (
+    <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
@@ -57,10 +78,15 @@ export default function App() {
         <Tab.Screen name="Home" component={Home} options={{ headerShown: false }}/>
         <Tab.Screen name="Search" component={Search} options={{ headerShown: false }}/>
         <Tab.Screen name="Favorites" component={Favorites} options={{ headerShown: false }}/>
-        <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }}/>
-        <Tab.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+        <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} initialParams={{ onLogout: handleLogout }}/>
       </Tab.Navigator>
+  );
+
+  return (
+    <NavigationContainer>
+      {isLoggedIn ? <TabNavigator /> : <StackNavigator />}
     </NavigationContainer>
   );
+
 }
 
