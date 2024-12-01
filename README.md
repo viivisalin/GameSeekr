@@ -1,7 +1,7 @@
 # GameSeekr
-##Mobiiliohjelmointi Lopputyö 2024
+## Mobiiliohjelmointi Lopputyö 2024
 
-###Käytetyt teknologiat
+### Käytetyt teknologiat
 
 **React Native**
 
@@ -19,9 +19,9 @@
 ---------------------------------------------
 
 # GameSeekr
-##Mobile Programming Final Project 2024
+## Mobile Programming Final Project 2024
 
-###Used technologies
+### Used technologies
 
 **React Native**
 
