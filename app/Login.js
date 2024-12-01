@@ -22,7 +22,10 @@ export default function Login({ navigation, route }) {
 
       if (data) {
         route.params.onLogin();
-        navigation.replace('Home');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       }
     } catch (error) {
       Alert.alert('Login failed', error.message);

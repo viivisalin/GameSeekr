@@ -29,10 +29,10 @@ export default function App() {
   const StackNavigator = () => (
     <Stack.Navigator>
       <Stack.Screen 
-        name='Login'
-        component={Login}
-        options={{ headerShown: false }}
-        initialParams={{ onLogin: handleLogin }}
+        name="Login" 
+        component={Login} 
+        options={{ headerShown: false }} 
+        initialParams={{ onLogin: handleLogin }} 
       />
     </Stack.Navigator>
   );

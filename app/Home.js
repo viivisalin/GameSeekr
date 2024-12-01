@@ -3,6 +3,8 @@ import { StyleSheet, View, Text, FlatList, ActivityIndicator, Image, TouchableOp
 import { useFonts } from "expo-font";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import supabase from "./supabase";
+
 import { RAWG_API_KEY } from '@env';
 import { useEffect, useState } from "react";
 
@@ -36,71 +38,110 @@ export default function Home() {
       }
     };
 
+    const fetchFavorites = async () => {
+      try {
+        const user_id = 'user_id';
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('favorites')
+          .eq('user_id', user_id)
+          .single();
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        setFavorites(data?.favorites || []);
+      } catch (error) {
+        console.error('Error fetching favorites:', error.message);
+      }
+    };
+
     fetchHighlightGames();
+    fetchFavorites();
   }, []);
 
-  const handleFavorite = (game) => {
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.includes(game.id)) {
-        return prevFavorites.filter((id) => id !== game.id);
-      } else {
-        return [...prevFavorites, game.id];
+  const handleFavorite = async (game) => {
+    try {
+      setFavorites((prevFavorites) => {
+        if (prevFavorites.includes(game.id)) {
+          return prevFavorites.filter((id) => id !== game.id);
+        } else {
+          return [...prevFavorites, game.id];
+        }
+      });
+
+      const user_id = 'user_id';
+      const { data, error } = await supabase
+        .from('profiles')
+        .upsert({
+          user_id: user_id,
+          favorites: favorites,
+        });
+
+      if (error) {
+        throw new Error(error.message);
       }
-    });
+
+      console.log('Favorites updated in the database');
+    } catch (error) {
+      console.error('Error updating favorite:', error.message);
+    }
   };
 
-  return (
-    <View style={styles.outerContainer}>
-      <View style={styles.container}>
-        <StatusBar style="auto" />
+return (
+  <View style={styles.outerContainer}>
+    <View style={styles.container}>
+      <StatusBar style="auto" />
 
-        {loading ? (
-          <ActivityIndicator size="medium" color="#7F7EFF" />
-        ) : (
-          <View>
-            <Text style={styles.text}>Welcome to GameSeekr!</Text>
-            <Text style={styles.highlightsText}>Highlighted Games</Text>
-            <FlatList
-              data={games}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.gameItem}>
-                  {item.background_image && (
-                    <Image
-                      source={{ uri: item.background_image }}
-                      style={styles.gameImage}
-                    />
+      {loading ? (
+        <ActivityIndicator size="medium" color="#7F7EFF" />
+      ) : (
+        <View>
+          <Text style={styles.text}>Welcome to GameSeekr!</Text>
+          <Text style={styles.highlightsText}>Highlighted Games</Text>
+          <FlatList
+            data={games}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.gameItem}>
+                {item.background_image && (
+                  <Image
+                    source={{ uri: item.background_image }}
+                    style={styles.gameImage}
+                  />
+                )}
+                <View style={styles.gameInfo}>
+                  <Text style={styles.gameTitle}>{item.name}</Text>
+                  {item.developers && item.developers.length > 0 && (
+                    <Text style={styles.gameDetail}>Developer: {item.developers[0].name}</Text>
                   )}
-                  <View style={styles.gameInfo}>
-                    <Text style={styles.gameTitle}>{item.name}</Text>
-                    {item.developers && item.developers.length > 0 && (
-                      <Text style={styles.gameDetail}>Developer: {item.developers[0].name}</Text>
-                    )}
-                    {item.released && (
-                      <Text style={styles.gameDetail}>Released: {new Date(item.released).getFullYear()}</Text>
-                    )}
-                    {item.rating && (
-                      <Text style={styles.gameDetail}>Rating: {item.rating}</Text>
-                    )}
-                    {item.stores && (
-                      <Text style={styles.gameStores}>
-                        Available on: {item.stores.map(store => store.store.name).join(", ")}</Text>
-                    )}
-                  </View>
-                  <TouchableOpacity
-                    style={styles.favoriteButton}
-                    onPress={() => handleFavorite(item)}
-                  >
-                    <Ionicons name="heart-outline" size={24} color="#F2F4FF" />
-                  </TouchableOpacity>
+                  {item.released && (
+                    <Text style={styles.gameDetail}>Released: {new Date(item.released).getFullYear()}</Text>
+                  )}
+                  {item.rating && (
+                    <Text style={styles.gameDetail}>Rating: {item.rating}</Text>
+                  )}
+                  {item.stores && (
+                    <Text style={styles.gameStores}>
+                      Available on: {item.stores.map(store => store.store.name).join(", ")}</Text>
+                  )}
                 </View>
-              )}
-            />
-          </View>
-        )}
-      </View>
+                <TouchableOpacity
+                  style={styles.favoriteButton}
+                  onPress={() => handleFavorite(item)}
+                >
+                  <Ionicons name="heart-outline" size={24} color="#F2F4FF" />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
+      )}
     </View>
-  );
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
